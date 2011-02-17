@@ -1,0 +1,49 @@
+@charset "utf-8";
+/* CSS Document */
+
+body {
+	background-color:#EEEEEE;
+	margin: 0px;
+    padding: 0px;
+}
+
+span, a {
+	color: #000000;
+	font-size: 12px;
+	font-family: "Arial Rounded MT Bold";
+}
+
+.no_uline {
+	text-decoration: none;
+}
+
+.top_bar {
+	padding: 2px 0 0;
+    width: 100%;
+    height: 20px;
+    padding-bottom: 1px;
+    border-bottom: 1px solid #000000;
+}
+
+.top_bar_left {
+	float: left;
+	height: 20px;
+	margin-left:8px;
+}
+
+.top_bar_right {
+	float: right;
+	height: 20px;
+	margin-right: 8px;
+}
+
+.main_block {
+	float: right;
+	width: 100%;
+}
+
+.bottom_bar {
+	margin-top: 2px;
+	width: 100%;
+	text-align: center;	
+}
