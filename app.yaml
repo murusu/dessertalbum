@@ -7,6 +7,10 @@ handlers:
 - url: /static
   static_dir: static
   expiration: "30d"
+  
+- url: /themes/(.*)
+  static_dir: themes/\1
+  expiration: "30d"
 
 - url: .*
   script: main.py

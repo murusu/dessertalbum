@@ -19,12 +19,36 @@ import os
 
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
+from google.appengine.api import memcache
+
+def get_themelist():
+    path = os.path.join(os.path.dirname(__file__),'themes')
+    themes = os.listdir(path)
+    for theme in themes:
+        if not os.path.isdir(os.path.join(path,theme)):
+            themes.remove(theme)
+    return themes
+
+def get_languagelist():
+    path = os.path.join(os.path.dirname(__file__),'themes',get_currenttheme(),'lng')
+    languages = os.listdir(path)
+    for language in languages:
+        if os.path.isdir(os.path.join(path,language)):
+            languages.remove(language)
+    return languages
+
+def get_currenttheme():
+    config = memcache.get("config")
+    if config is not None:
+        return config.theme
+    else:
+        return 'default'
 
 
 class MainHandler(webapp.RequestHandler):
     def get(self):
-        self.response.out.write(os.listdir('E:/ram/gae/dessertalbum/static/'))
-'''
+        #self.response.out.write(get_languagelist())
+
         self.response.out.write( \
 """
 <html>
@@ -34,14 +58,14 @@ class MainHandler(webapp.RequestHandler):
         <script type="text/javascript" language="JavaScript" src="static/jquery-1.5.min.js"></script>
         <script type="text/javascript" language="JavaScript" src="static/jquery.cookie.js"></script>
         <script type="text/javascript" language="JavaScript" src="static/jquery.xLazyLoader.js"></script>
-        <script type="text/javascript" language="JavaScript" src="static/theme_list.js"></script>
         <script type="text/javascript" language="JavaScript" src="static/core.js"></script>
+        <script type="text/javascript" language="JavaScript" src="themes/""" + get_currenttheme() + """/theme_main.js"></script>
     </head>
     <body>
     </body>
 </html>
 """ )
-'''        
+       
 
 
 def main():

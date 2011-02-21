@@ -15,8 +15,8 @@ $(document).ready(function(){
 	var theme_name = $.cookie("theme")?$.cookie("theme"):"default";
 	
 	$.xLazyLoader({
-		js: ['static/themes/' + theme_name + '/lng_list.js','static/themes/' + theme_name + '/theme_main.js'],
-		css: ['static/themes/' + theme_name + '/css/theme.css'],
+		js: ['themes/' + theme_name + '/lng_list.js','themes/' + theme_name + '/theme_main.js'],
+		css: ['themes/' + theme_name + '/css/theme.css'],
 		name: theme_name,
 		load: function(){
 			//alert("document.getElementsByTagName("head")[0].innerHTML"test"");
@@ -60,17 +60,17 @@ function change_theme() {
 	var theme_name = $.cookie("theme")?$.cookie("theme"):theme_list[0];
 	$.cookie("theme", theme_name);
 	
-	$("script").remove("[src*='static/themes']"); 
-	$("link").remove("[href*='static/themes']"); 
+	$("script").remove("[src*='themes']"); 
+	$("link").remove("[href*='themes']"); 
 	
-	$("head").append('<script type="text/javascript" src="static/themes/' + theme_name + '/theme_main.js"></script>').ready(function(){setTimeout(setup_page, 1);})
+	$("head").append('<script type="text/javascript" src="themes/' + theme_name + '/theme_main.js"></script>').ready(function(){setTimeout(setup_page, 1);})
 }
 
 function change_language(theme_name, lng_name) {			
 	$.cookie("lng", lng_name);		   
-	$("script").remove("[src*='static/themes/" + theme_name + "/lng']"); 	
+	$("script").remove("[src*='themes/" + theme_name + "/lng']"); 	
 
-	$("head").append('<script type="text/javascript" src="static/themes/" + theme_name + "/lng/' + lng_name + '.js"></script>').ready(function(){setTimeout(setup_str, 1);});
+	$("head").append('<script type="text/javascript" src="themes/" + theme_name + "/lng/' + lng_name + '.js"></script>').ready(function(){setTimeout(setup_str, 1);});
 }
 
 function init_lng(theme_name) {
