@@ -15,12 +15,16 @@
 # limitations under the License.
 #
 
+import os
+
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
 
 
 class MainHandler(webapp.RequestHandler):
     def get(self):
+        self.response.out.write(os.listdir('E:/ram/gae/dessertalbum/static/'))
+'''
         self.response.out.write( \
 """
 <html>
@@ -37,7 +41,7 @@ class MainHandler(webapp.RequestHandler):
     </body>
 </html>
 """ )
-        
+'''        
 
 
 def main():
