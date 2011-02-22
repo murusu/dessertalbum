@@ -21,6 +21,8 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
 from google.appengine.api import memcache
 
+from models import AlbumConfig
+
 def get_themelist():
     path = os.path.join(os.path.dirname(__file__),'themes')
     themes = os.listdir(path)
@@ -30,8 +32,8 @@ def get_themelist():
     return themes
 
 def get_languagelist():
-    path = os.path.join(os.path.dirname(__file__),'themes',get_currenttheme(),'lng')
-    languages = os.listdir(path)
+    path = os.path.join(os.path.dirname(__file__),'themes',str(get_currenttheme()),'lng')
+    languages = os.listdir(path)    
     for language in languages:
         if os.path.isdir(os.path.join(path,language)):
             languages.remove(language)
@@ -41,14 +43,16 @@ def get_currenttheme():
     config = memcache.get("config")
     if config is not None:
         return config.theme
-    else:
-        return 'default'
+    else:  
+        config = AlbumConfig.get_config()   
+        memcache.add("config", config, 60)   
+        return config.theme
 
 
 class MainHandler(webapp.RequestHandler):
     def get(self):
-        #self.response.out.write(get_languagelist())
-
+        self.response.out.write(get_languagelist())
+'''
         self.response.out.write( \
 """
 <html>
@@ -65,7 +69,7 @@ class MainHandler(webapp.RequestHandler):
     </body>
 </html>
 """ )
-       
+'''  
 
 
 def main():

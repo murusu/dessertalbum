@@ -15,10 +15,20 @@
 # limitations under the License.
 #
 
+from google.appengine.ext import db
+
 class AlbumConfig(db.Model):
   title = db.StringProperty(required=True)
   theme = db.StringProperty(required=True)
   anti_leech = db.BooleanProperty(required=True, default=False)  
   list_type = db.StringProperty(required=True, choices=set(["black_list", "white_list"]))
   list_content = db.StringProperty()
+  
+  @classmethod
+  def get_config(cls):
+      config = AlbumConfig.get_by_key_name('1')
+      if config is None:
+          config = AlbumConfig(key_name='1', title='My Album', theme='default', anti_leech=False, list_type='black_list')
+          config.put()
+      return config
   
