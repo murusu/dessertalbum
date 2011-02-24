@@ -16,19 +16,38 @@
 #
 
 from google.appengine.ext import db
+from google.appengine.api import memcache
 
 class AlbumConfig(db.Model):
-  title = db.StringProperty(required=True)
-  theme = db.StringProperty(required=True)
-  anti_leech = db.BooleanProperty(required=True, default=False)  
-  list_type = db.StringProperty(required=True, choices=set(["black_list", "white_list"]))
-  list_content = db.StringProperty()
+  title 		= db.StringProperty(required=True)
+  theme 		= db.StringProperty(required=True)
+  anti_leech 	= db.BooleanProperty(required=True, default=False)  
+  list_type		= db.StringProperty(required=True, choices=set(["black_list", "white_list"]))
+  list_content 	= db.StringProperty()
   
   @classmethod
   def get_config(cls):
-      config = AlbumConfig.get_by_key_name('1')
-      if config is None:
-          config = AlbumConfig(key_name='1', title='My Album', theme='default', anti_leech=False, list_type='black_list')
-          config.put()
-      return config
+  	  config = memcache.get("config")
+	  
+	  if config is None:
+	  	config = AlbumConfig.get_by_key_name('1')		
+		if config is None:
+			config = AlbumConfig(key_name='1', title='My Albums', theme='default', anti_leech=False, list_type='black_list')
+			config.put()
+			
+		memcache.add("config", config, 60*60*24) 
+		
+	  return config
+  
+
+class Album(db.Model):
+  name 				= db.StringProperty(required=True) 
+  update_time 		= db.DateTimeProperty(auto_now=True)
+  list_type 		= db.StringProperty(required=True, choices=set(["black_list", "white_list"]))
+  list_content 		= db.StringProperty()
+  access_type 		= db.StringProperty(required=True, choices=set(["pubilc", "share", "private"]))
+  access_password 	= db.StringProperty()
+  description 		= db.StringProperty()
+  cover_thumbnail 	= db.StringProperty()
+  
   

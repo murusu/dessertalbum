@@ -16,6 +16,7 @@
 #
 
 import os
+import Cookie
 
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
@@ -32,38 +33,35 @@ def get_themelist():
     return themes
 
 def get_languagelist():
-    path = os.path.join(os.path.dirname(__file__),'themes',str(get_currenttheme()),'lng')
+    path = os.path.join(os.path.dirname(__file__),'themes', AlbumConfig.get_config().theme,'lng')
     languages = os.listdir(path)    
     for language in languages:
         if os.path.isdir(os.path.join(path,language)):
             languages.remove(language)
     return languages
 
-def get_currenttheme():
-    config = memcache.get("config")
-    if config is not None:
-        return config.theme
-    else:  
-        config = AlbumConfig.get_config()   
-        memcache.add("config", config, 60)   
-        return config.theme
-
-
 class MainHandler(webapp.RequestHandler):
     def get(self):
-        self.response.out.write(get_languagelist())
+        #self.response.out.write(get_languagelist())
+        cookie = Cookie.SimpleCookie()
+        cookie["lng"] = "teset"
+        self.response.out.write(cookie["lng"].value)
+
+	current_theme = AlbumConfig.get_config().theme
 '''
         self.response.out.write( \
 """
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
-        <title>Test</title>
+        <title>""" + AlbumConfig.get_config().title + """</title>
         <script type="text/javascript" language="JavaScript" src="static/jquery-1.5.min.js"></script>
         <script type="text/javascript" language="JavaScript" src="static/jquery.cookie.js"></script>
         <script type="text/javascript" language="JavaScript" src="static/jquery.xLazyLoader.js"></script>
         <script type="text/javascript" language="JavaScript" src="static/core.js"></script>
-        <script type="text/javascript" language="JavaScript" src="themes/""" + get_currenttheme() + """/theme_main.js"></script>
+        <script type="text/javascript" language="JavaScript" src="themes/""" + current_theme + """/theme_main.js"></script>
+	<script type="text/javascript" language="JavaScript" src="themes/""" + current_theme + """/lng/en-us.js"></script>
+	<link type="text/css" rel="stylesheet" href="themes/""" + current_theme + """/css/theme.css" />
     </head>
     <body>
     </body>

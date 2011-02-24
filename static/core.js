@@ -12,6 +12,7 @@ $(document).ready(function(){
 		5000); 
 	*/
 	//change_theme();
+	/*
 	var theme_name = $.cookie("theme")?$.cookie("theme"):"default";
 	
 	$.xLazyLoader({
@@ -23,6 +24,8 @@ $(document).ready(function(){
 			init_theme();
 		}
 	});
+	*/
+	init_theme();
 });
 /*
 function init_lng() {
