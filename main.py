@@ -16,7 +16,7 @@
 #
 
 import os
-import Cookie
+import datetime
 
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
@@ -43,12 +43,17 @@ def get_languagelist():
 class MainHandler(webapp.RequestHandler):
     def get(self):
         #self.response.out.write(get_languagelist())
-        cookie = Cookie.SimpleCookie()
-        cookie["lng"] = "teset"
-        self.response.out.write(cookie["lng"].value)
+        max_age = 60 * 60 * 24 * 30
+        expires = datetime.datetime.strftime(datetime.datetime.utcnow() +  datetime.timedelta(seconds=max_age), "%a, %d-%b-%Y %H:%M:%S GMT")
+        self.response.headers.add_header("Set-Cookie", AlbumConfig.get_config().key().__str__() + "_lng=google; expires=" + expires + "max_age=" + str(max_age))   
+        name = self.request.cookies.get(AlbumConfig.get_config().key().__str__() + '_lng')  
+        #name = self.request.host_url
+
+        #self.response.out.write(name)
 
 	current_theme = AlbumConfig.get_config().theme
-'''
+    #current_config = AlbumConfig.get_config()
+
         self.response.out.write( \
 """
 <html>
@@ -67,7 +72,7 @@ class MainHandler(webapp.RequestHandler):
     </body>
 </html>
 """ )
-'''  
+ 
 
 
 def main():
