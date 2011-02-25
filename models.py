@@ -19,12 +19,12 @@ from google.appengine.ext import db
 from google.appengine.api import memcache
 
 class AlbumConfig(db.Model):
-  title 		= db.StringProperty(required=True)
-  theme 		= db.StringProperty(required=True)
+  title 	= db.StringProperty(required=True)
+  template 	= db.StringProperty(required=True)
   anti_leech 	= db.BooleanProperty(required=True, default=False)  
-  list_type		= db.StringProperty(required=True, choices=set(["black_list", "white_list"]))
+  list_type	= db.StringProperty(required=True, choices=set(["black_list", "white_list"]))
   list_content 	= db.StringProperty()
-  
+
   @classmethod
   def get_config(cls):
   	  config = memcache.get("config")
@@ -32,7 +32,7 @@ class AlbumConfig(db.Model):
 	  if config is None:
 	  	config = AlbumConfig.get_by_key_name('1')		
 		if config is None:
-			config = AlbumConfig(key_name='1', title='My Albums', theme='default', anti_leech=False, list_type='black_list')
+			config = AlbumConfig(key_name='1', title='My Albums', template='default', anti_leech=False, list_type='black_list')
 			config.put()
 			
 		memcache.add("config", config, 60*60*24) 
@@ -41,7 +41,7 @@ class AlbumConfig(db.Model):
   
 
 class Album(db.Model):
-  name 				= db.StringProperty(required=True) 
+  name 			= db.StringProperty(required=True) 
   update_time 		= db.DateTimeProperty(auto_now=True)
   list_type 		= db.StringProperty(required=True, choices=set(["black_list", "white_list"]))
   list_content 		= db.StringProperty()

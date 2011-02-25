@@ -8,24 +8,24 @@ handlers:
   static_dir: static
   expiration: "30d"
   
-- url: /themes/(.*).js
-  static_files: themes/\1.js
-  upload: /themes/(.*).js
+- url: /templates/(.*).js
+  static_files: templates/\1.js
+  upload: /templates/(.*).js
   expiration: "30d"
 
-- url: /themes/(.*)/lng/(.*)
-  static_files: themes/\1/lng/\2
-  upload: themes/(.*)/lng/(.*)
+- url: /templates/(.*)/lng/(.*)
+  static_files: templates/\1/lng/\2
+  upload: templates/(.*)/lng/(.*)
   expiration: "30d"
   
-- url: /themes/(.*)/css/(.*)
-  static_files: themes/\1/css/\2
-  upload: themes/(.*)/css/(.*)
+- url: /templates/(.*)/css/(.*)
+  static_files: templates/\1/css/\2
+  upload: templates/(.*)/css/(.*)
   expiration: "30d"
 
-- url: /themes/(.*)/images/(.*)
-  static_files: themes/\1/images/\2
-  upload: themes/(.*)/images/(.*)
+- url: /templates/(.*)/images/(.*)
+  static_files: templates/\1/images/\2
+  upload: templates/(.*)/images/(.*)
   expiration: "30d"
 
 - url: .*

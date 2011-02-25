@@ -24,55 +24,62 @@ from google.appengine.api import memcache
 
 from models import AlbumConfig
 
-def get_themelist():
-    path = os.path.join(os.path.dirname(__file__),'themes')
-    themes = os.listdir(path)
-    for theme in themes:
-        if not os.path.isdir(os.path.join(path,theme)):
-            themes.remove(theme)
-    return themes
+def get_templatelist():
+    path        = os.path.join(os.path.dirname(__file__),'templates')
+    templates   = os.listdir(path)
+    for template in templates:
+        if not os.path.isdir(os.path.join(path,template)):
+            templates.remove(template)
+    return templates
 
 def get_languagelist():
-    path = os.path.join(os.path.dirname(__file__),'themes', AlbumConfig.get_config().theme,'lng')
-    languages = os.listdir(path)    
-    for language in languages:
-        if os.path.isdir(os.path.join(path,language)):
-            languages.remove(language)
-    return languages
+    path            = os.path.join(os.path.dirname(__file__),'templates', AlbumConfig.get_config().template,'lng')
+    dir_list        = os.listdir(path)
+    language_list   = []
+    for dir_name in dir_list:
+        if not os.path.isdir(os.path.join(path,dir_name)):
+            language_list.append(dir_name[:-3])            
+    return language_list
 
 class MainHandler(webapp.RequestHandler):
     def get(self):
-        #self.response.out.write(get_languagelist())
+        config          = AlbumConfig.get_config()
+        language_list   = get_languagelist()
+        
+        cookie_lng = self.request.cookies.get(config.key().__str__() + '_lng')
+        accept_lng = self.request.accept_language
+        select_lng = "en-us"
+        
+        for lng in language_list:
+            if cookie_lng:
+                if lng in cookie_lng:
+                    select_lng = lng
+            if accept_lng:
+                if lng in accept_lng:
+                    select_lng = lng
+        
         max_age = 60 * 60 * 24 * 30
         expires = datetime.datetime.strftime(datetime.datetime.utcnow() +  datetime.timedelta(seconds=max_age), "%a, %d-%b-%Y %H:%M:%S GMT")
-        self.response.headers.add_header("Set-Cookie", AlbumConfig.get_config().key().__str__() + "_lng=google; expires=" + expires + "max_age=" + str(max_age))   
-        name = self.request.cookies.get(AlbumConfig.get_config().key().__str__() + '_lng')  
-        #name = self.request.host_url
-
-        #self.response.out.write(name)
-
-	current_theme = AlbumConfig.get_config().theme
-    #current_config = AlbumConfig.get_config()
+        self.response.headers.add_header("Set-Cookie", config.key().__str__() + "_lng=" + select_lng + "; expires=" + expires + "; max_age=" + str(max_age))   
 
         self.response.out.write( \
 """
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
-        <title>""" + AlbumConfig.get_config().title + """</title>
+        <title>""" + config.title + """</title>
         <script type="text/javascript" language="JavaScript" src="static/jquery-1.5.min.js"></script>
         <script type="text/javascript" language="JavaScript" src="static/jquery.cookie.js"></script>
         <script type="text/javascript" language="JavaScript" src="static/jquery.xLazyLoader.js"></script>
         <script type="text/javascript" language="JavaScript" src="static/core.js"></script>
-        <script type="text/javascript" language="JavaScript" src="themes/""" + current_theme + """/theme_main.js"></script>
-	<script type="text/javascript" language="JavaScript" src="themes/""" + current_theme + """/lng/en-us.js"></script>
-	<link type="text/css" rel="stylesheet" href="themes/""" + current_theme + """/css/theme.css" />
+        <script type="text/javascript" language="JavaScript" src="templates/""" + config.template + """/template_main.js"></script>
+	<script type="text/javascript" language="JavaScript" src="templates/""" + config.template + """/lng/""" + select_lng + """.js"></script>
+	<link type="text/css" rel="stylesheet" href="templates/""" + config.template + """/css/template.css" />
     </head>
     <body>
     </body>
 </html>
 """ )
- 
 
 
 def main():
