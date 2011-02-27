@@ -19,10 +19,10 @@ from google.appengine.ext import db
 from google.appengine.api import memcache
 
 class AlbumConfig(db.Model):
-  title 	= db.StringProperty(required=True)
-  template 	= db.StringProperty(required=True)
+  title 	    = db.StringProperty(required=True)
+  template 	    = db.StringProperty(required=True)
   anti_leech 	= db.BooleanProperty(required=True, default=False)  
-  list_type	= db.StringProperty(required=True, choices=set(["black_list", "white_list"]))
+  list_type	    = db.StringProperty(required=True, choices=set(["black_list", "white_list"]))
   list_content 	= db.StringProperty()
 
   @classmethod
@@ -41,7 +41,7 @@ class AlbumConfig(db.Model):
   
 
 class Album(db.Model):
-  name 			= db.StringProperty(required=True) 
+  name 			    = db.StringProperty(required=True) 
   update_time 		= db.DateTimeProperty(auto_now=True)
   list_type 		= db.StringProperty(required=True, choices=set(["black_list", "white_list"]))
   list_content 		= db.StringProperty()

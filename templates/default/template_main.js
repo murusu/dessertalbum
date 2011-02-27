@@ -1,52 +1,66 @@
 // JavaScript Document
-function setup_page() {
-	/*
-	$("head").append('<link type="text/css" rel="stylesheet" href="static/themes/default/css/theme.css" />').ready(
-		function(){
-			setTimeout(
-				function() {
-					alert("test");
-				}, 
-			1); 
-		}
-	)
-	*/
+function open_menu(menu_id, button_id) {
+	var_left = $("#" + button_id).offset().left;
+	$("#" + menu_id).css("margin-left",var_left + "px");
 	
-	
-	
-	$("head").append('<script type="text/javascript" src="static/themes/default/lng/lng_list.js"></script>').ready(
-		function(){
-			setTimeout(
-				function(){
-					$("head").append('<link type="text/css" rel="stylesheet" href="static/themes/default/css/theme.css" />').ready(
-						function(){
-							setTimeout(
-								function(){
-									$("body").html('<div class="top_bar"><div class="top_bar_left">dfg</div><div class="top_bar_right">dfgh</div><div class="top_bar_bottom"></div></div><div class="main_block"></div><div class="bottom_bar"><div class="bottom_bar_top"></div><div class="bottom_bar_left">001</div><div class="bottom_bar_right">002</div></div>');
-								},
-							1);
-						}
-					);
-					init_lng("default");
-				}, 
-				1
-			);
-	});
+	$("#" + menu_id).removeClass("disable");
+	$('html').one('click',function(){
+		$("#" + menu_id).addClass("disable");
+	});	
 }
 
 function setup_str() {
+	//$(".top_bar_left span").html("teT");
 }
 
+function init_fail() {
+	
+}
 
-function init_theme() {	
+function init_theme(response) {	
+	//alert(response.user_url);
+	
+	sign_text 	= response.user_name?layout_text["logout"]:layout_text["login"];
+	sign_block 	= '<a href="' + response.user_url + '">' + sign_text + '</a>';
+
+	language_block = '<a href="javascript:open_menu(\'top_bar_languagelist\', \'language_button\')" class="no_uline" id="language_button"><u>' + language_text[$.cookie(response.key + "_lng")] + '</u> <small>▼</small></a>';	
+	language_list = '';
+	$.each(response.language_list, function(i, n) {
+		language_list += '<a href="javascript:change_language(\'' + response.key + '_lng' + '\',\'' + n + '\')">' + language_text[n] + '</a>';
+	});
+	
+	manager_block = (response.is_admin == "true")?'<a href="javascript:open_menu(\'top_bar_managerlist\', \'manager_button\')" class="no_uline" id="manager_button"><u>' + layout_text["management"] + '</u> <small>▼</small></a> | ':'';
+		
 	$("body").html(
 	 '<div class="top_bar">'
-	+	'<div class="top_bar_left"><span>Album list</span></div>'
-	+	'<div class="top_bar_right"><span><a href="www.google.com" class="no_uline"><u>View setting</u> <small>▼</small></a> | <a href="www.google.com" class="no_uline"><u>Default theme</u> <small>▼</small></a> | <a href="www.google.com" class="no_uline"><u>English</u> <small>▼</small></a> | <a href="www.google.com">Sign in</a></span></div>'
-	//+	'<div class="top_bar_bottom"></div>'
+	+	'<div class="top_bar_left"><span>' + layout_text["top_page"] + '</span></div>'
+	+	'<div class="top_bar_right">'
+	+		'<span> ' + manager_block  + language_block + ' | ' + sign_block + '</span>'		
+	+	'</div>'		
 	+'</div>'
-	+'<div class="main_block">fg<br/><br/><br/><br/><br/></div>'
+	+'<div class="dropdown_list disable" id="top_bar_languagelist">'
+	+ 	language_list	
+	+'</div>'
+	+'<div class="dropdown_list disable" id="top_bar_managerlist">'
+	+ 	'<a href="#">System setting</a>'
+	+ 	'<a href="#">test2</a>'	
+	+'</div>'
+	+'<div class="main_block" id="album_list">fg<br/><br/><br/><br/><br/></div>'
+	+'<div class="main_block disable" id="image_list">fg<br/><br/><br/><br/><br/></div>'
+	+'<div class="main_block disable" id="image_show">fg<br/><br/><br/><br/><br/></div>'
 	+'<div class="bottom_bar"><span>Powered by Dessert Album.</span></div>');
 	
 	//getInfo();
+	setup_str();
+	
+	$(function(){
+  		$(window).hashchange( function(){
+    		var hash = location.hash;
+    		//document.title = 'The hash is ' + ( hash.replace( /^#/, '' ) || 'blank' ) + '.';
+    		//document.title = hash;
+  		})
+  		
+  		$(window).hashchange();  
+	});
+
 }

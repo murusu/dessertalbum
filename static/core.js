@@ -25,7 +25,20 @@ $(document).ready(function(){
 		}
 	});
 	*/
-	init_theme();
+	$.ajax({
+   		type: "POST",
+   		data: "action=init",
+   		dataType: "json",
+   		error: function() {
+   			//$("body").html("test");
+   			init_fail();
+   		},
+  		success: function(json_data){
+     		init_theme(json_data);
+     		///$("body").html("<div>" + error_info["invalid_response"] + "</div>");     		
+   		}
+	});
+	
 });
 /*
 function init_lng() {
@@ -69,11 +82,12 @@ function change_theme() {
 	$("head").append('<script type="text/javascript" src="themes/' + theme_name + '/theme_main.js"></script>').ready(function(){setTimeout(setup_page, 1);})
 }
 
-function change_language(theme_name, lng_name) {			
-	$.cookie("lng", lng_name);		   
-	$("script").remove("[src*='themes/" + theme_name + "/lng']"); 	
-
-	$("head").append('<script type="text/javascript" src="themes/" + theme_name + "/lng/' + lng_name + '.js"></script>').ready(function(){setTimeout(setup_str, 1);});
+function change_language(key, lng_name) {
+	if ($.cookie(key) != lng_name)
+	{
+		$.cookie(key, lng_name);
+		window.location.reload();
+	}
 }
 
 function init_lng(theme_name) {

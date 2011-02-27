@@ -19,6 +19,7 @@ import os
 import datetime
 
 from google.appengine.ext import webapp
+from google.appengine.api import users
 from google.appengine.ext.webapp import util
 from google.appengine.api import memcache
 
@@ -41,6 +42,37 @@ def get_languagelist():
             language_list.append(dir_name[:-3])            
     return language_list
 
+def init_album(handler):
+    is_admin = "false"
+    if users.is_current_user_admin():
+        is_admin = "true"
+    
+    user_url = ""
+    user_name = ""
+    if users.get_current_user():
+        user_url = users.create_logout_url("/")
+        user_name = users.get_current_user().nickname()
+    else:
+        user_url = users.create_login_url("/")
+    
+    language_json = ""    
+    language_list = get_languagelist();
+    for language in language_list:
+        if language_json:
+            language_json = language_json + ',"' + language + '"'
+        else:
+            language_json = '"' + language + '"'
+    language_json = "[" + language_json + "]"
+    
+    config = AlbumConfig.get_config()
+    handler.response.out.write('{"key":"' + config.key().__str__() + '","template":"' + config.template + '","is_admin":"' + is_admin  + '","user_url":"' + user_url  + '","user_name":"' + user_name + '","language_list":' + language_json + '}') 
+    
+def get_albums(handler):
+    return "test2"
+    
+def add_album(handler):
+    return "test3"
+
 class MainHandler(webapp.RequestHandler):
     def get(self):
         config          = AlbumConfig.get_config()
@@ -48,15 +80,22 @@ class MainHandler(webapp.RequestHandler):
         
         cookie_lng = self.request.cookies.get(config.key().__str__() + '_lng')
         accept_lng = self.request.accept_language
-        select_lng = "en-us"
+        cookie_flag = "";
+        accept_flag = "";
         
         for lng in language_list:
-            if cookie_lng:
-                if lng in cookie_lng:
-                    select_lng = lng
             if accept_lng:
                 if lng in accept_lng:
-                    select_lng = lng
+                    accept_flag = lng;
+            if cookie_lng:
+                if lng in cookie_lng:
+                    cookie_flag = lng;
+        
+        select_lng = "en-us"            
+        if cookie_flag:
+            select_lng = cookie_flag
+        elif accept_flag:    
+            select_lng = accept_flag       
         
         max_age = 60 * 60 * 24 * 30
         expires = datetime.datetime.strftime(datetime.datetime.utcnow() +  datetime.timedelta(seconds=max_age), "%a, %d-%b-%Y %H:%M:%S GMT")
@@ -71,15 +110,25 @@ class MainHandler(webapp.RequestHandler):
         <script type="text/javascript" language="JavaScript" src="static/jquery-1.5.min.js"></script>
         <script type="text/javascript" language="JavaScript" src="static/jquery.cookie.js"></script>
         <script type="text/javascript" language="JavaScript" src="static/jquery.xLazyLoader.js"></script>
+        <script type="text/javascript" language="JavaScript" src="static/jquery.ba-hashchange.min.js"></script>
         <script type="text/javascript" language="JavaScript" src="static/core.js"></script>
         <script type="text/javascript" language="JavaScript" src="templates/""" + config.template + """/template_main.js"></script>
-	<script type="text/javascript" language="JavaScript" src="templates/""" + config.template + """/lng/""" + select_lng + """.js"></script>
-	<link type="text/css" rel="stylesheet" href="templates/""" + config.template + """/css/template.css" />
+	    <script type="text/javascript" language="JavaScript" src="templates/""" + config.template + """/lng/""" + select_lng + """.js"></script>
+	    <link type="text/css" rel="stylesheet" href="templates/""" + config.template + """/css/template.css" />
     </head>
     <body>
     </body>
 </html>
 """ )
+        
+    def post(self):
+        action = self.request.get("action", default_value="init")        
+        actions = { 
+           'init': lambda:init_album(self), 
+           'get_albums': lambda:get_albums(self), 
+           'add_album': lambda:add_album(self)
+        }        
+        actions.get(action, 'init')()
 
 
 def main():
