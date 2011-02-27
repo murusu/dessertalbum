@@ -1,6 +1,6 @@
 // JavaScript Document
 function open_menu(menu_id, button_id) {
-	var_left = $("#" + button_id).offset().left;
+	var_left = $("#" + button_id).offset().left - 5;
 	$("#" + menu_id).css("margin-left",var_left + "px");
 	
 	$("#" + menu_id).removeClass("disable");
