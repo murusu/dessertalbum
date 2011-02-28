@@ -35,13 +35,13 @@ class AlbumConfig(db.Model):
 			config = AlbumConfig(key_name='1', title='My Albums', template='default', anti_leech=False, list_type='black_list')
 			config.put()
 			
-		memcache.add("config", config, 60*60*24) 
+		memcache.add("config", config, 60*60*24*30) 
 		
 	  return config
   
 
 class Album(db.Model):
-  name 			= db.StringProperty(required=True) 
+  name 			    = db.StringProperty(required=True) 
   update_time 		= db.DateTimeProperty(auto_now=True)
   list_type 		= db.StringProperty(required=True, choices=set(["black_list", "white_list"]))
   list_content 		= db.StringProperty()
@@ -49,5 +49,6 @@ class Album(db.Model):
   access_password 	= db.StringProperty()
   description 		= db.StringProperty()
   cover_thumbnail 	= db.StringProperty()
+  image_number      = db.IntegerProperty(required=True)
   
   

@@ -1,31 +1,4 @@
 $(document).ready(function(){
-	//init_lng();
-	//init_theme();
-	/*
-	setTimeout(function() {
-			//$("link").remove("[href*='static/static/test.css']"); 
-			//$("head").append('<link type="text/css" rel="stylesheet" href="static/test2.css"/>');
-			//alert("test");
-			//$("#test_div").attr("class", "test_style2");
-			$(".test_style").removeClass("test_style").addClass("test_style2");
-		}, 
-		5000); 
-	*/
-	//change_theme();
-	/*
-	var theme_name = $.cookie("theme")?$.cookie("theme"):"default";
-	
-	$.xLazyLoader({
-		js: ['themes/' + theme_name + '/lng_list.js','themes/' + theme_name + '/theme_main.js'],
-		css: ['themes/' + theme_name + '/css/theme.css'],
-		name: theme_name,
-		load: function(){
-			//alert("document.getElementsByTagName("head")[0].innerHTML"test"");
-			init_theme();
-		}
-	});
-	*/
-	//alert("test1");
 	$.ajax({
    		type: "POST",
 		cache: false,
@@ -33,19 +6,31 @@ $(document).ready(function(){
    		data: "action=init",
    		dataType: "json",
    		error: function(req, status, error) {
-   			//$("body").html("test");
-			//alert("tesT2");
-			//alert(error);
    			init_fail();
    		},
   		success: function(json_data){
-			//alert("start up");
-     		init_theme(json_data);
-     		///$("body").html("<div>" + error_info["invalid_response"] + "</div>");     		
+     		init_theme(json_data);   		
    		}
 	});
 	
 });
+
+function get_albums() {
+	$.ajax({
+		type: "POST",
+		cache: false,
+		url: "/",
+		data: "action=get_albums",
+		dataType: "json",
+		error: function(req, status, error) {
+			alert("get album list fail");
+   		},
+   		success: function(json_data){
+			alert("get album list success");
+			alert(json_data);
+   		}
+	})
+}
 
 function add_album(name) {
 	$.ajax({
@@ -53,19 +38,12 @@ function add_album(name) {
 		cache: false,
 		url: "/",
    		data: "action=add_album"
-			+ "name=" + name,
+			+ "&name=" + name,
    		dataType: "json",
    		error: function(req, status, error) {
-   			//$("body").html("test");
-			//alert("tesT2");
-			//alert(error);
-   			//init_fail();
 			alert("add album fail");
    		},
   		success: function(json_data){
-			//alert("start up");
-     		//init_theme(json_data);
-     		///$("body").html("<div>" + error_info["invalid_response"] + "</div>");     
 			alert("add album success");
 			alert(json_data);
    		}

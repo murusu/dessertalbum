@@ -23,7 +23,7 @@ from google.appengine.api import users
 from google.appengine.ext.webapp import util
 from google.appengine.api import memcache
 
-from models import AlbumConfig
+from models import AlbumConfig, Album
 
 def get_templatelist():
     path        = os.path.join(os.path.dirname(__file__),'templates')
@@ -70,14 +70,29 @@ def init_album(handler):
     handler.response.out.write('{"key":"' + config.key().__str__() + '","template":"' + config.template + '","is_admin":"' + is_admin  + '","user_url":"' + user_url  + '","user_name":"' + user_name + '","language_list":' + language_json + '}') 
     
 def get_albums(handler):    
-    return "test3"
+    query = Album.all()
+    query.order('-update_time')
+    results = query.fetch(1000)
+    
+    album_json = "" 
+    for album in results:
+        if album_json:
+            album_json = album_json + ',{"id":"' + str(album.key().id()) + '","name":"' + album.name + '","cover_thumbnail":"' + str(album.cover_thumbnail) + '","description":"' + str(album.description) + '","image_number":"' + str(album.image_number) + '"}'
+        else:
+            album_json = '{"id":"' + str(album.key().id()) + '","name":"' + album.name + '","cover_thumbnail":"' + str(album.cover_thumbnail) + '","description":"' + str(album.description) + '","image_number":"' + str(album.image_number) + '"}'
+    
+    handler.response.out.write('[' + album_json + ']');
     
 def add_album(handler):
     if not users.is_current_user_admin():
         handler.response.out.write('{"error":"access_denied"}');
         return
+    
+    album = Album(name= handler.request.get("name", default_value="New Album"), list_type='black_list', access_type='pubilc',image_number=0)
+    album.put()    
+    memcache.add("album_" + str(album.key().id()), album, 60*60*24*30) 
 
-    handler.response.out.write('{"result":"success_add"}');
+    handler.response.out.write('{"id":"' + str(album.key().id()) + '","name":"' + album.name + '"}');
 
 class MainHandler(webapp.RequestHandler):
     def get(self):

@@ -22,13 +22,13 @@ function switch_adminmode(flag) {
 			$(".admin_menu").removeClass("disable");
 		}
 		
-		$("#admin_button").html("Common Mode");
+		$("#admin_button").html("Admin Mode");
 		$("#admin_button").attr("href","javascript:switch_adminmode(0)");
 	}
 	else
 	{
 		$(".admin_menu").addClass("disable");
-		$("#admin_button").html("Admin Mode");
+		$("#admin_button").html("Common Mode");
 		$("#admin_button").attr("href","javascript:switch_adminmode(1)");
 	}	
 }
@@ -51,8 +51,8 @@ function init_theme(response) {
 		language_list += '<a href="javascript:change_language(\'' + response.key + '_lng' + '\',\'' + n + '\')">' + language_text[n] + '</a>';
 	});
 	
-	manager_mode = (response.is_admin == "true")?'<a href="javascript:switch_adminmode(1)" class="link_button" id="admin_button">Admin Mode</a> | ':'';
-		
+	manager_mode = (response.is_admin == "true")?'<a href="javascript:switch_adminmode(1)" class="link_button" id="admin_button">Commond Mode</a> | ':'';
+	//manager_mode = '<a href="javascript:switch_adminmode(1)" class="link_button" id="admin_button">Admin Mode</a> | ';	
 	$("body").html(
 	 '<div class="top_bar">'
 	+	'<div class="top_bar_left"><span>' + layout_text["top_page"] + '</span></div>'
@@ -72,6 +72,8 @@ function init_theme(response) {
 	+'<div class="main_block disable" id="image_show">fg<br/><br/><br/><br/><br/></div>'
 	+'<div class="bottom_bar"><span>Powered by Dessert Album.</span></div>');
 	//setup_str();
+	
+	get_albums();
 	
 	$(function(){
   		$(window).hashchange( function(){
