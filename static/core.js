@@ -25,21 +25,52 @@ $(document).ready(function(){
 		}
 	});
 	*/
+	//alert("test1");
 	$.ajax({
    		type: "POST",
+		cache: false,
+		url: "/",
    		data: "action=init",
    		dataType: "json",
-   		error: function() {
+   		error: function(req, status, error) {
    			//$("body").html("test");
+			//alert("tesT2");
+			//alert(error);
    			init_fail();
    		},
   		success: function(json_data){
+			//alert("start up");
      		init_theme(json_data);
      		///$("body").html("<div>" + error_info["invalid_response"] + "</div>");     		
    		}
 	});
 	
 });
+
+function add_album(name) {
+	$.ajax({
+   		type: "POST",
+		cache: false,
+		url: "/",
+   		data: "action=add_album"
+			+ "name=" + name,
+   		dataType: "json",
+   		error: function(req, status, error) {
+   			//$("body").html("test");
+			//alert("tesT2");
+			//alert(error);
+   			//init_fail();
+			alert("add album fail");
+   		},
+  		success: function(json_data){
+			//alert("start up");
+     		//init_theme(json_data);
+     		///$("body").html("<div>" + error_info["invalid_response"] + "</div>");     
+			alert("add album success");
+			alert(json_data);
+   		}
+	});
+}
 /*
 function init_lng() {
 	var lng = ($.cookie("lng")?$.cookie("lng"):(navigator.language?navigator.language:navigator.browserLanguage)).toLowerCase();

@@ -6,10 +6,10 @@ if(!language_text) var language_text = new Array();
 
 error_info["invalid_response"] = "get an invalid response from server, please try again";
 
-layout_text["top_page"] = "首页";
-layout_text["login"] = "登陆";
-layout_text["logout"] = "注销";
-layout_text["management"] = "管理";
+layout_text["top_page"] = "Top";
+layout_text["login"] = "Sign In";
+layout_text["logout"] = "Sign Out";
+layout_text["management"] = "Management";
 
 language_text["en-us"] = "English";
 language_text["zh-cn"] = "简体中文";

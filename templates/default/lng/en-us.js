@@ -10,6 +10,7 @@ layout_text["top_page"] = "Top";
 layout_text["login"] = "Sign In";
 layout_text["logout"] = "Sign Out";
 layout_text["management"] = "Management";
+layout_text["new_album"] = "New Album";
 
 language_text["en-us"] = "English";
 language_text["zh-cn"] = "简体中文";

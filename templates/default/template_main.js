@@ -9,6 +9,30 @@ function open_menu(menu_id, button_id) {
 	});	
 }
 
+function switch_adminmode(flag) {
+	if (flag)
+	{
+		if (!$(".admin_menu").html())
+		{
+			manager_block = '<span class="admin_menu"><a href="javascript:open_menu(\'top_bar_managerlist\', \'manager_button\')" class="no_uline" id="manager_button"><u>' + layout_text["management"] + '</u> <small>▼</small></a> | </span>';	
+			$(".top_bar_right span").prepend(manager_block);
+		}
+		else
+		{
+			$(".admin_menu").removeClass("disable");
+		}
+		
+		$("#admin_button").html("Common Mode");
+		$("#admin_button").attr("href","javascript:switch_adminmode(0)");
+	}
+	else
+	{
+		$(".admin_menu").addClass("disable");
+		$("#admin_button").html("Admin Mode");
+		$("#admin_button").attr("href","javascript:switch_adminmode(1)");
+	}	
+}
+
 function setup_str() {
 	//$(".top_bar_left span").html("teT");
 }
@@ -17,9 +41,7 @@ function init_fail() {
 	
 }
 
-function init_theme(response) {	
-	//alert(response.user_url);
-	
+function init_theme(response) {		
 	sign_text 	= response.user_name?layout_text["logout"]:layout_text["login"];
 	sign_block 	= '<a href="' + response.user_url + '">' + sign_text + '</a>';
 
@@ -29,29 +51,27 @@ function init_theme(response) {
 		language_list += '<a href="javascript:change_language(\'' + response.key + '_lng' + '\',\'' + n + '\')">' + language_text[n] + '</a>';
 	});
 	
-	manager_block = (response.is_admin == "true")?'<a href="javascript:open_menu(\'top_bar_managerlist\', \'manager_button\')" class="no_uline" id="manager_button"><u>' + layout_text["management"] + '</u> <small>▼</small></a> | ':'';
+	manager_mode = (response.is_admin == "true")?'<a href="javascript:switch_adminmode(1)" class="link_button" id="admin_button">Admin Mode</a> | ':'';
 		
 	$("body").html(
 	 '<div class="top_bar">'
 	+	'<div class="top_bar_left"><span>' + layout_text["top_page"] + '</span></div>'
 	+	'<div class="top_bar_right">'
-	+		'<span> ' + manager_block  + language_block + ' | ' + sign_block + '</span>'		
+	+		'<span> ' + manager_mode  + language_block + ' | ' + sign_block + '</span>'		
 	+	'</div>'		
 	+'</div>'
 	+'<div class="dropdown_list disable" id="top_bar_languagelist">'
 	+ 	language_list	
 	+'</div>'
 	+'<div class="dropdown_list disable" id="top_bar_managerlist">'
-	+ 	'<a href="#">System setting</a>'
-	+ 	'<a href="#">test2</a>'	
+	+ 	'<a href="javascript:add_album(\'' + layout_text["new_album"] + '\')">Add New Album</a>'
+	+ 	'<a href="#">System Config</a>'	
 	+'</div>'
 	+'<div class="main_block" id="album_list">fg<br/><br/><br/><br/><br/></div>'
 	+'<div class="main_block disable" id="image_list">fg<br/><br/><br/><br/><br/></div>'
 	+'<div class="main_block disable" id="image_show">fg<br/><br/><br/><br/><br/></div>'
 	+'<div class="bottom_bar"><span>Powered by Dessert Album.</span></div>');
-	
-	//getInfo();
-	setup_str();
+	//setup_str();
 	
 	$(function(){
   		$(window).hashchange( function(){
@@ -62,5 +82,4 @@ function init_theme(response) {
   		
   		$(window).hashchange();  
 	});
-
 }

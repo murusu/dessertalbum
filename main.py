@@ -43,6 +43,7 @@ def get_languagelist():
     return language_list
 
 def init_album(handler):
+    #handler.response.out.write('test')    
     is_admin = "false"
     if users.is_current_user_admin():
         is_admin = "true"
@@ -65,13 +66,18 @@ def init_album(handler):
     language_json = "[" + language_json + "]"
     
     config = AlbumConfig.get_config()
+    
     handler.response.out.write('{"key":"' + config.key().__str__() + '","template":"' + config.template + '","is_admin":"' + is_admin  + '","user_url":"' + user_url  + '","user_name":"' + user_name + '","language_list":' + language_json + '}') 
     
-def get_albums(handler):
-    return "test2"
+def get_albums(handler):    
+    return "test3"
     
 def add_album(handler):
-    return "test3"
+    if not users.is_current_user_admin():
+        handler.response.out.write('{"error":"access_denied"}');
+        return
+
+    handler.response.out.write('{"result":"success_add"}');
 
 class MainHandler(webapp.RequestHandler):
     def get(self):
@@ -113,8 +119,8 @@ class MainHandler(webapp.RequestHandler):
         <script type="text/javascript" language="JavaScript" src="static/jquery.ba-hashchange.min.js"></script>
         <script type="text/javascript" language="JavaScript" src="static/core.js"></script>
         <script type="text/javascript" language="JavaScript" src="templates/""" + config.template + """/template_main.js"></script>
-	    <script type="text/javascript" language="JavaScript" src="templates/""" + config.template + """/lng/""" + select_lng + """.js"></script>
-	    <link type="text/css" rel="stylesheet" href="templates/""" + config.template + """/css/template.css" />
+	<script type="text/javascript" language="JavaScript" src="templates/""" + config.template + """/lng/""" + select_lng + """.js"></script>
+	<link type="text/css" rel="stylesheet" href="templates/""" + config.template + """/css/template.css" />
     </head>
     <body>
     </body>
@@ -122,6 +128,7 @@ class MainHandler(webapp.RequestHandler):
 """ )
         
     def post(self):
+        #self.response.out.write('test')        
         action = self.request.get("action", default_value="init")        
         actions = { 
            'init': lambda:init_album(self), 
@@ -129,6 +136,7 @@ class MainHandler(webapp.RequestHandler):
            'add_album': lambda:add_album(self)
         }        
         actions.get(action, 'init')()
+        
 
 
 def main():

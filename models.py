@@ -41,7 +41,7 @@ class AlbumConfig(db.Model):
   
 
 class Album(db.Model):
-  name 			    = db.StringProperty(required=True) 
+  name 			= db.StringProperty(required=True) 
   update_time 		= db.DateTimeProperty(auto_now=True)
   list_type 		= db.StringProperty(required=True, choices=set(["black_list", "white_list"]))
   list_content 		= db.StringProperty()

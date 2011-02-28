@@ -10,11 +10,25 @@ body {
 span, a {
 	color: #000000;
 	font-size: 12px;
-	font-family: "Arial Rounded MT Bold";
+	font-family: arial,sans-serif;
+	font-weight: normal;
 }
 
 .no_uline {
 	text-decoration: none;
+}
+
+.link_button {
+	text-decoration: none;
+	padding: 2px 5px 2px 5px;
+}
+
+.admin_menu {
+}
+
+.link_button:hover {
+	background-color:#666666;
+	color:#FFFFFF;
 }
 
 .top_bar {
