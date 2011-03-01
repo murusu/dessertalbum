@@ -82,7 +82,13 @@ def get_albums(handler):
     key = "albumlist_" + order + "_" + handler.request.get("limit") + "_" + handler.request.get("start")
     if users.is_current_user_admin():
         key = key + "_admin"
-    album_json = memcache.get(key)
+        
+    list_updatetime = memcache.get(key + "_updatetime")
+    album_updatetime = memcache.get("album_updatetime")
+    
+    album_json = ""
+    if list_updatetime and album_updatetime and list_updatetime > album_updatetime:
+        album_json = memcache.get(key)
 	
     if not album_json:    
         query = Album.all()
@@ -107,8 +113,11 @@ def get_albums(handler):
                 else:
                     album_json = '{"id":"' + str(album.key().id()) + '","name":"' + album.name + '","cover_thumbnail":"' + thumbnail + '","description":"' + description + '","image_number":"' + str(album.image_number) + '","access_type":"' + album.access_type + '"}'
 				
-	album_json = '[' + album_json + ']'
-	memcache.add(key, album_json, 60*60*24*30) 
+        album_json = '[' + album_json + ']'
+        memcache.set(key, album_json, 60*60*24*30) 
+        memcache.set(key + "_updatetime", datetime.datetime.utcnow(), 60*60*24*30)
+        if not album_updatetime:
+            memcache.set("album_updatetime", datetime.datetime.utcnow(), 60*60*24*30)
     
     handler.response.out.write(album_json)
     
@@ -117,9 +126,9 @@ def add_album(handler):
         handler.response.out.write('{"error":"access_denied"}');
         return
     
-    album = Album(name= handler.request.get("name", default_value="New Album"), list_type='black_list', access_type='pubilc',image_number=0)
-    album.put()    
-    #memcache.add("album_" + str(album.key().id()), album, 60*60*24*30) 
+    album = Album(name= handler.request.get("name", default_value="New Album"), list_type='black_list', access_type='public',image_number=0)
+    album.put()
+    memcache.set("album_updatetime", datetime.datetime.utcnow(), 60*60*24*30)
 
     handler.response.out.write('{"id":"' + str(album.key().id()) + '","name":"' + album.name + '"}');
 

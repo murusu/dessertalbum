@@ -101,11 +101,14 @@ span, a {
 }
 
 #album_list {
+/*
 	_margin-left:-40px;
 	_margin-top:-20px;
+	*/
 }
 
 #album_list div{
+display:inline;
 	float:left;
 	margin:0px;
 	padding:0px;
@@ -113,6 +116,7 @@ span, a {
 	height:240px;
 	background-color:#00CC66;
 	margin-top:20px;
+	_margin-top:0px;
 	margin-bottom:20px;
 	margin-left:40px;
 }
