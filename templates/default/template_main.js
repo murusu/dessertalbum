@@ -67,9 +67,10 @@ function init_theme(response) {
 	+ 	'<a href="javascript:add_album(\'' + layout_text["new_album"] + '\')">Add New Album</a>'
 	+ 	'<a href="#">System Config</a>'	
 	+'</div>'
-	+'<div class="main_block" id="album_list">fg<br/><br/><br/><br/><br/></div>'
-	+'<div class="main_block disable" id="image_list">fg<br/><br/><br/><br/><br/></div>'
-	+'<div class="main_block disable" id="image_show">fg<br/><br/><br/><br/><br/></div>'
+	+'<div class="main_block" id="album_list"></div>'
+	+'<div class="main_block disable" id="image_list"></div>'
+	+'<div class="main_block disable" id="image_show"></div>'
+	+'<div style="clear:both; "></div>'
 	+'<div class="bottom_bar"><span>Powered by Dessert Album.</span></div>');
 	//setup_str();
 	
@@ -84,4 +85,20 @@ function init_theme(response) {
   		
   		$(window).hashchange();  
 	});
+}
+
+function list_albums(json_data) {	
+	$("#image_list").addClass("disable");
+	$("#image_show").addClass("disable");
+	$("#album_list").removeClass("disable");
+	
+	loading_icon = "./templates/default/images/loading.gif";
+	albums_list = "";
+	
+	$.each(json_data, function(i, n) {
+		albums_list += '<div><a href="javascript:get_album(\'' + n.id + '\')" ><img src="' + loading_icon + '"/></a><span>' + n.name + '</span><span>' + n.image_number + '</span></div>';
+	});
+	
+	//albums_list = '<ul class="albums_list">' + albums_list + '<li style="clear:both;height:1px;"></li></ul>';
+	$("#album_list").append(albums_list);
 }

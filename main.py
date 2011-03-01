@@ -69,19 +69,48 @@ def init_album(handler):
     
     handler.response.out.write('{"key":"' + config.key().__str__() + '","template":"' + config.template + '","is_admin":"' + is_admin  + '","user_url":"' + user_url  + '","user_name":"' + user_name + '","language_list":' + language_json + '}') 
     
-def get_albums(handler):    
-    query = Album.all()
-    query.order('-update_time')
-    results = query.fetch(1000)
+def get_albums(handler):
+    order = ""
+    if handler.request.get("sort") == "date":
+        order = "update_time"
+    else:
+        order = "name"
+
+    if handler.request.get("order") == "descend":
+        order = "-" + order
+
+    key = "albumlist_" + order + "_" + handler.request.get("limit") + "_" + handler.request.get("start")
+    if users.is_current_user_admin():
+        key = key + "_admin"
+    album_json = memcache.get(key)
+	
+    if not album_json:    
+        query = Album.all()
+        query.order(order)
+        results = query.fetch(int(handler.request.get("limit")),int(handler.request.get("start")))
+
+        for album in results:
+            if album.access_type != "private" or users.is_current_user_admin():
+                thumbnail = "no_cover"
+                if album.cover_thumbnail:
+                    if album.access_type == "share" and not users.is_current_user_admin():
+                        thumbnail = "password_protect"
+                    else:
+                        thumbnail = album.cover_thumbnail
+
+                description = ""
+                if album.description:
+                    description = album.description
+            
+                if album_json:
+                    album_json = album_json + ',{"id":"' + str(album.key().id()) + '","name":"' + album.name + '","cover_thumbnail":"' + thumbnail + '","description":"' + description + '","image_number":"' + str(album.image_number) + '","access_type":"' + album.access_type + '"}'
+                else:
+                    album_json = '{"id":"' + str(album.key().id()) + '","name":"' + album.name + '","cover_thumbnail":"' + thumbnail + '","description":"' + description + '","image_number":"' + str(album.image_number) + '","access_type":"' + album.access_type + '"}'
+				
+	album_json = '[' + album_json + ']'
+	memcache.add(key, album_json, 60*60*24*30) 
     
-    album_json = "" 
-    for album in results:
-        if album_json:
-            album_json = album_json + ',{"id":"' + str(album.key().id()) + '","name":"' + album.name + '","cover_thumbnail":"' + str(album.cover_thumbnail) + '","description":"' + str(album.description) + '","image_number":"' + str(album.image_number) + '"}'
-        else:
-            album_json = '{"id":"' + str(album.key().id()) + '","name":"' + album.name + '","cover_thumbnail":"' + str(album.cover_thumbnail) + '","description":"' + str(album.description) + '","image_number":"' + str(album.image_number) + '"}'
-    
-    handler.response.out.write('[' + album_json + ']');
+    handler.response.out.write(album_json)
     
 def add_album(handler):
     if not users.is_current_user_admin():
@@ -90,7 +119,7 @@ def add_album(handler):
     
     album = Album(name= handler.request.get("name", default_value="New Album"), list_type='black_list', access_type='pubilc',image_number=0)
     album.put()    
-    memcache.add("album_" + str(album.key().id()), album, 60*60*24*30) 
+    #memcache.add("album_" + str(album.key().id()), album, 60*60*24*30) 
 
     handler.response.out.write('{"id":"' + str(album.key().id()) + '","name":"' + album.name + '"}');
 

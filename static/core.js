@@ -16,18 +16,26 @@ $(document).ready(function(){
 });
 
 function get_albums() {
+	sort_type 	= arguments[0]?arguments[0]:"date"; 
+	order 		= arguments[0]?arguments[0]:"descend"; 
+	start 		= arguments[2]?arguments[2]:0; 
+	limit 		= arguments[3]?arguments[3]:1000;
+	
 	$.ajax({
 		type: "POST",
 		cache: false,
 		url: "/",
-		data: "action=get_albums",
+		data: "action=get_albums"
+			+ "&sort=" + sort_type
+			+ "&order=" + order
+			+ "&start=" + start
+			+ "&limit=" + limit,
 		dataType: "json",
 		error: function(req, status, error) {
 			alert("get album list fail");
    		},
    		success: function(json_data){
-			alert("get album list success");
-			alert(json_data);
+			list_albums(json_data);
    		}
 	})
 }
@@ -45,9 +53,12 @@ function add_album(name) {
    		},
   		success: function(json_data){
 			alert("add album success");
-			alert(json_data);
    		}
 	});
+}
+
+function get_album(id) {
+	alert("id:" + id);
 }
 /*
 function init_lng() {

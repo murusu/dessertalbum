@@ -99,3 +99,20 @@ span, a {
 	margin-top: 2px;
 	text-align: center;
 }
+
+#album_list {
+	_margin-left:-40px;
+	_margin-top:-20px;
+}
+
+#album_list div{
+	float:left;
+	margin:0px;
+	padding:0px;
+	width:180px;
+	height:240px;
+	background-color:#00CC66;
+	margin-top:20px;
+	margin-bottom:20px;
+	margin-left:40px;
+}
