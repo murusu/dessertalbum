@@ -96,9 +96,16 @@ function list_albums(json_data) {
 	albums_list = "";
 	
 	$.each(json_data, function(i, n) {
-		albums_list += '<div><a href="javascript:get_album(\'' + n.id + '\')" ><img src="' + loading_icon + '"/></a><span>' + n.name + '</span><span>' + n.image_number + '</span></div>';
+		thumbnail = n.cover_thumbnail;
+		if (n.cover_thumbnail == "no_cover") thumbnail = "./templates/default/images/" + layout_text["no_cover"];
+		if (n.cover_thumbnail == "password_protect") thumbnail = "./templates/default/images/" + layout_text["password_protect"];
+		albums_list += '<div><a href="javascript:get_album(\'' + n.id + '\')" ><img src="' + thumbnail + '"/></a><span>' + n.name + '</span><span>' + n.image_number + '</span></div>';
 	});
 	
 	//albums_list = '<ul class="albums_list">' + albums_list + '<li style="clear:both;height:1px;"></li></ul>';
 	$("#album_list").append(albums_list);
+}
+
+function show_newalbum(json_data) {
+	$("#album_list").prepend('<div><a href="javascript:get_album(\'' + json_data.id + '\')" ><img src="./templates/default/images/' + layout_text["no_cover"] + '"/></a><span>' + json_data.name + '</span><span>0</span></div>');
 }

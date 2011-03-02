@@ -16,7 +16,7 @@ $(document).ready(function(){
 });
 
 function get_albums() {
-	sort_type 	= arguments[0]?arguments[0]:"date"; 
+	sort_type 	= arguments[0]?arguments[0]:"create"; 
 	order 		= arguments[0]?arguments[0]:"descend"; 
 	start 		= arguments[2]?arguments[2]:0; 
 	limit 		= arguments[3]?arguments[3]:1000;
@@ -49,10 +49,11 @@ function add_album(name) {
 			+ "&name=" + name,
    		dataType: "json",
    		error: function(req, status, error) {
-			alert("add album fail");
+			//alert("add album fail");
    		},
   		success: function(json_data){
-			alert("add album success");
+			//alert("add album success");
+			show_newalbum(json_data);
    		}
 	});
 }

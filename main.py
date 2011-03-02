@@ -71,8 +71,10 @@ def init_album(handler):
     
 def get_albums(handler):
     order = ""
-    if handler.request.get("sort") == "date":
+    if handler.request.get("sort") == "update":
         order = "update_time"
+    elif handler.request.get("sort") == "create":
+        order = "create_time"
     else:
         order = "name"
 

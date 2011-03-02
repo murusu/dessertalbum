@@ -11,6 +11,8 @@ layout_text["login"] = "Sign In";
 layout_text["logout"] = "Sign Out";
 layout_text["management"] = "Management";
 layout_text["new_album"] = "New Album";
+layout_text["no_cover"] = "no_cover_cn.jpg";
+layout_text["password_protect"] = "password_protect_cn.jpg";
 
 language_text["en-us"] = "English";
 language_text["zh-cn"] = "简体中文";
