@@ -52,4 +52,29 @@ class Album(db.Model):
   cover_thumbnail 	= db.StringProperty()
   image_number      = db.IntegerProperty(required=True)
   
+class Thumbnail(db.Model):
+  album             = db.StringProperty(required=True)
+  image             = db.StringProperty(required=True)
+  name              = db.StringProperty(required=True)
+  create_time       = db.DateTimeProperty(auto_now_add=True)
+  mime              = db.StringProperty()
+  size              = db.IntegerProperty()
+  width             = db.IntegerProperty()
+  height            = db.IntegerProperty()
+  bf                = db.BlobProperty()
+  
+class Image(db.Model):
+  album             = db.StringProperty(required=True)
+  name              = db.StringProperty(required=True)
+  create_time       = db.DateTimeProperty(auto_now_add=True)
+  mime              = db.StringProperty()
+  size              = db.IntegerProperty()
+  width             = db.IntegerProperty()
+  height            = db.IntegerProperty()
+  bf                = db.BlobProperty()
+  
+class ImageBF(db.Model):  
+  image             = db.StringProperty(required=True)
+  bf                = db.BlobProperty()
+  
   

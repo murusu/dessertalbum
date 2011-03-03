@@ -74,7 +74,7 @@ function init_theme(response) {
 	+'<div class="bottom_bar"><span>Powered by Dessert Album.</span></div>');
 	//setup_str();
 	
-	get_albums();
+	get_albumlist();
 	
 	$(function(){
   		$(window).hashchange( function(){
@@ -99,7 +99,7 @@ function list_albums(json_data) {
 		thumbnail = n.cover_thumbnail;
 		if (n.cover_thumbnail == "no_cover") thumbnail = "./templates/default/images/" + layout_text["no_cover"];
 		if (n.cover_thumbnail == "password_protect") thumbnail = "./templates/default/images/" + layout_text["password_protect"];
-		albums_list += '<div><a href="javascript:get_album(\'' + n.id + '\')" ><img src="' + thumbnail + '"/></a><span>' + n.name + '</span><span>' + n.image_number + '</span></div>';
+		albums_list += '<div><a href="javascript:get_album(\'' + n.id + '\')" ><img src="' + thumbnail + '"/></a><span>' + n.name + '</span><span><div></div></span></div>';
 	});
 	
 	//albums_list = '<ul class="albums_list">' + albums_list + '<li style="clear:both;height:1px;"></li></ul>';

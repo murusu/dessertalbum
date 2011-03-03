@@ -69,7 +69,7 @@ def init_album(handler):
     
     handler.response.out.write('{"key":"' + config.key().__str__() + '","template":"' + config.template + '","is_admin":"' + is_admin  + '","user_url":"' + user_url  + '","user_name":"' + user_name + '","language_list":' + language_json + '}') 
     
-def get_albums(handler):
+def get_albumlist(handler):
     order = ""
     if handler.request.get("sort") == "update":
         order = "update_time"
@@ -122,6 +122,16 @@ def get_albums(handler):
             memcache.set("album_updatetime", datetime.datetime.utcnow(), 60*60*24*30)
     
     handler.response.out.write(album_json)
+    
+def get_album(handler):
+    id = handler.request.get("id")
+    
+    if not id:
+        handler.response.out.write('{"error":"invaild_call"}');
+        return
+    
+    
+    
     
 def add_album(handler):
     if not users.is_current_user_admin():
@@ -187,8 +197,9 @@ class MainHandler(webapp.RequestHandler):
         action = self.request.get("action", default_value="init")        
         actions = { 
            'init': lambda:init_album(self), 
-           'get_albums': lambda:get_albums(self), 
-           'add_album': lambda:add_album(self)
+           'get_albumlist': lambda:get_albumlist(self), 
+           'add_album': lambda:add_album(self),
+           'get_album': lambda:get_album(self)
         }        
         actions.get(action, 'init')()
         
