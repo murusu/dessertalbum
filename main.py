@@ -88,11 +88,11 @@ def get_albumlist(handler):
     list_updatetime = memcache.get(key + "_updatetime")
     album_updatetime = memcache.get("album_updatetime")
     
-    album_json = ""
+    albumlist_json = ""
     if list_updatetime and album_updatetime and list_updatetime > album_updatetime:
-        album_json = memcache.get(key)
+        albumlist_json = memcache.get(key)
 	
-    if not album_json:    
+    if not albumlist_json:    
         query = Album.all()
         query.order(order)
         results = query.fetch(int(handler.request.get("limit")),int(handler.request.get("start")))
@@ -110,25 +110,62 @@ def get_albumlist(handler):
                 if album.description:
                     description = album.description
             
-                if album_json:
-                    album_json = album_json + ',{"id":"' + str(album.key().id()) + '","name":"' + album.name + '","cover_thumbnail":"' + thumbnail + '","description":"' + description + '","image_number":"' + str(album.image_number) + '","access_type":"' + album.access_type + '"}'
+                if albumlist_json:
+                    albumlist_json = albumlist_json + ',{"id":"' + str(album.key().id()) + '","name":"' + album.name + '","cover_thumbnail":"' + thumbnail + '","description":"' + description + '","image_number":"' + str(album.image_number) + '","access_type":"' + album.access_type + '"}'
                 else:
-                    album_json = '{"id":"' + str(album.key().id()) + '","name":"' + album.name + '","cover_thumbnail":"' + thumbnail + '","description":"' + description + '","image_number":"' + str(album.image_number) + '","access_type":"' + album.access_type + '"}'
+                    albumlist_json = '{"id":"' + str(album.key().id()) + '","name":"' + album.name + '","cover_thumbnail":"' + thumbnail + '","description":"' + description + '","image_number":"' + str(album.image_number) + '","access_type":"' + album.access_type + '"}'
 				
-        album_json = '[' + album_json + ']'
-        memcache.set(key, album_json, 60*60*24*30) 
+        albumlist_json = '[' + albumlist_json + ']'
+        memcache.set(key, albumlist_json, 60*60*24*30) 
         memcache.set(key + "_updatetime", datetime.datetime.utcnow(), 60*60*24*30)
         if not album_updatetime:
             memcache.set("album_updatetime", datetime.datetime.utcnow(), 60*60*24*30)
     
-    handler.response.out.write(album_json)
+    handler.response.out.write(albumlist_json)
     
 def get_album(handler):
-    id = handler.request.get("id")
+    id          = handler.request.get("id")
+    password    = handler.request.get("pass")
     
     if not id:
-        handler.response.out.write('{"error":"invaild_call"}');
+        handler.response.out.write('{"error":"invaild_call"}')
         return
+    
+    album = Album.get_by_id(int(id))
+    
+    if not album:
+        handler.response.out.write('{"error":"invaild_call"}')
+        return
+    
+    if album.access_type == "share" and not password == album.access_password:
+        handler.response.out.write('{"error":"access_denied"}')
+        return
+    
+    if album.access_type == "private" and not users.is_current_user_admin():
+        handler.response.out.write('{"error":"access_denied"}')
+        return
+    
+    order = ""
+    if handler.request.get("sort") == "create":
+        order = "create_time"
+    else:
+        order = "name"
+
+    if handler.request.get("order") == "descend":
+        order = "-" + order
+
+    key = "album_thumbnail_list_" + id
+    albumthumbnail_list_json = ""
+    albumthumbnail_list_json = memcache.get(key)
+    
+    if not albumthumbnail_list_json:
+        query = Thumbnail.all()
+        query.filter('album=', id)
+        query.order(order)
+        results = query.fetch(int(handler.request.get("limit")),int(handler.request.get("start")))
+        
+        for thumbnail in results:
+            
     
     
     

@@ -17,7 +17,7 @@ $(document).ready(function(){
 
 function get_albumlist() {
 	sort_type 	= arguments[0]?arguments[0]:"create"; 
-	order 		= arguments[0]?arguments[0]:"descend"; 
+	order 		= arguments[1]?arguments[1]:"descend"; 
 	start 		= arguments[2]?arguments[2]:0; 
 	limit 		= arguments[3]?arguments[3]:1000;
 	
@@ -58,8 +58,13 @@ function add_album(name) {
 	});
 }
 
-function get_album(id) {
+function get_album() {
+	id 			= arguments[0]?arguments[0]:""; 
 	password 	= arguments[1]?arguments[1]:""; 
+	sort_type 	= arguments[2]?arguments[2]:"create"; 
+	order 		= arguments[3]?arguments[3]:"descend"; 
+	start 		= arguments[4]?arguments[4]:0; 
+	limit 		= arguments[5]?arguments[5]:1000;
 	//alert("id:" + id);
 	$.ajax({
    		type: "POST",
@@ -67,7 +72,11 @@ function get_album(id) {
 		url: "/",
    		data: "action=get_album"
 			+ "&id=" + id
-			+ "&pass=" + password,
+			+ "&pass=" + password
+			+ "&sort=" + sort_type
+			+ "&order=" + order
+			+ "&start=" + start
+			+ "&limit=" + limit,
    		dataType: "json",
    		error: function(req, status, error) {
 			alert("get album fail");
