@@ -23,7 +23,7 @@ from google.appengine.api import users
 from google.appengine.ext.webapp import util
 from google.appengine.api import memcache
 
-from models import AlbumConfig, Album
+from models import AlbumConfig, Album, Thumbnail, Image, ImageBF
 
 def get_templatelist():
     path        = os.path.join(os.path.dirname(__file__),'templates')
@@ -34,7 +34,7 @@ def get_templatelist():
     return templates
 
 def get_languagelist():
-    path            = os.path.join(os.path.dirname(__file__),'templates', AlbumConfig.get_config().template,'lng')
+    path            = os.path.join(os.path.dirname(__file__),'templates', AlbumConfig.get_object().template,'lng')
     dir_list        = os.listdir(path)
     language_list   = []
     for dir_name in dir_list:
@@ -57,7 +57,7 @@ def init_album(handler):
         user_url = users.create_login_url("/")
     
     language_json = ""    
-    language_list = get_languagelist();
+    language_list = get_languagelist()
     for language in language_list:
         if language_json:
             language_json = language_json + ',"' + language + '"'
@@ -65,7 +65,7 @@ def init_album(handler):
             language_json = '"' + language + '"'
     language_json = "[" + language_json + "]"
     
-    config = AlbumConfig.get_config()
+    config = AlbumConfig.get_object()
     
     handler.response.out.write('{"key":"' + config.key().__str__() + '","template":"' + config.template + '","is_admin":"' + is_admin  + '","user_url":"' + user_url  + '","user_name":"' + user_name + '","language_list":' + language_json + '}') 
     
@@ -80,48 +80,11 @@ def get_albumlist(handler):
 
     if handler.request.get("order") == "descend":
         order = "-" + order
-
-    key = "albumlist_" + order + "_" + handler.request.get("limit") + "_" + handler.request.get("start")
-    if users.is_current_user_admin():
-        key = key + "_admin"
         
-    list_updatetime = memcache.get(key + "_updatetime")
-    album_updatetime = memcache.get("album_updatetime")
-    
-    albumlist_json = ""
-    if list_updatetime and album_updatetime and list_updatetime > album_updatetime:
-        albumlist_json = memcache.get(key)
-	
-    if not albumlist_json:    
-        query = Album.all()
-        query.order(order)
-        results = query.fetch(int(handler.request.get("limit")),int(handler.request.get("start")))
-
-        for album in results:
-            if album.access_type != "private" or users.is_current_user_admin():
-                thumbnail = "no_cover"
-                if album.cover_thumbnail:
-                    if album.access_type == "share" and not users.is_current_user_admin():
-                        thumbnail = "password_protect"
-                    else:
-                        thumbnail = album.cover_thumbnail
-
-                description = ""
-                if album.description:
-                    description = album.description
-            
-                if albumlist_json:
-                    albumlist_json = albumlist_json + ',{"id":"' + str(album.key().id()) + '","name":"' + album.name + '","cover_thumbnail":"' + thumbnail + '","description":"' + description + '","image_number":"' + str(album.image_number) + '","access_type":"' + album.access_type + '"}'
-                else:
-                    albumlist_json = '{"id":"' + str(album.key().id()) + '","name":"' + album.name + '","cover_thumbnail":"' + thumbnail + '","description":"' + description + '","image_number":"' + str(album.image_number) + '","access_type":"' + album.access_type + '"}'
-				
-        albumlist_json = '[' + albumlist_json + ']'
-        memcache.set(key, albumlist_json, 60*60*24*30) 
-        memcache.set(key + "_updatetime", datetime.datetime.utcnow(), 60*60*24*30)
-        if not album_updatetime:
-            memcache.set("album_updatetime", datetime.datetime.utcnow(), 60*60*24*30)
-    
-    handler.response.out.write(albumlist_json)
+    limit = handler.request.get("limit", default_value="1000")
+    start = handler.request.get("start", default_value="0")
+        
+    handler.response.out.write(Album.get_list(order, limit, start))
     
 def get_album(handler):
     id          = handler.request.get("id")
@@ -131,7 +94,7 @@ def get_album(handler):
         handler.response.out.write('{"error":"invaild_call"}')
         return
     
-    album = Album.get_by_id(int(id))
+    album = Album.get_object(id)
     
     if not album:
         handler.response.out.write('{"error":"invaild_call"}')
@@ -154,36 +117,29 @@ def get_album(handler):
     if handler.request.get("order") == "descend":
         order = "-" + order
 
-    key = "album_thumbnail_list_" + id
-    albumthumbnail_list_json = ""
-    albumthumbnail_list_json = memcache.get(key)
+    limit = handler.request.get("limit", default_value="1000")
+    start = handler.request.get("start", default_value="0")
     
-    if not albumthumbnail_list_json:
-        query = Thumbnail.all()
-        query.filter('album=', id)
-        query.order(order)
-        results = query.fetch(int(handler.request.get("limit")),int(handler.request.get("start")))
-        
-        for thumbnail in results:
+    image_list = Album.get_image_list(id, order, limit, start)
             
-    
-    
-    
+    handler.response.out.write('{"album_id":"' + str(album.id) + '","album_name":"' + album.name + '","image_list":' + image_list + '}')
     
 def add_album(handler):
     if not users.is_current_user_admin():
         handler.response.out.write('{"error":"access_denied"}');
         return
-    
+    '''
     album = Album(name= handler.request.get("name", default_value="New Album"), list_type='black_list', access_type='public',image_number=0)
     album.put()
+    memcache.set("album_" + str(album.key().id()), album, 60*60*24*30)
     memcache.set("album_updatetime", datetime.datetime.utcnow(), 60*60*24*30)
-
-    handler.response.out.write('{"id":"' + str(album.key().id()) + '","name":"' + album.name + '"}');
+    '''
+    album = Album.add_object(handler.request.get("name", default_value="New Album"))    
+    handler.response.out.write('{"id":"' + str(album.id) + '","name":"' + album.name + '"}');
 
 class MainHandler(webapp.RequestHandler):
     def get(self):
-        config          = AlbumConfig.get_config()
+        config          = AlbumConfig.get_object()
         language_list   = get_languagelist()
         
         cookie_lng = self.request.cookies.get(config.key().__str__() + '_lng')

@@ -16,10 +16,16 @@ $(document).ready(function(){
 });
 
 function get_albumlist() {
-	sort_type 	= arguments[0]?arguments[0]:"create"; 
-	order 		= arguments[1]?arguments[1]:"descend"; 
-	start 		= arguments[2]?arguments[2]:0; 
-	limit 		= arguments[3]?arguments[3]:1000;
+	call_back	= arguments[0];	
+	sort_type 	= arguments[1]?arguments[1]:"create"; 
+	order 		= arguments[2]?arguments[2]:"descend"; 
+	start 		= arguments[3]?arguments[3]:0; 
+	limit 		= arguments[4]?arguments[4]:1000;
+	
+	if(!call_back)
+	{
+		return;
+	}
 	
 	$.ajax({
 		type: "POST",
@@ -35,7 +41,7 @@ function get_albumlist() {
 			alert("get album list fail");
    		},
    		success: function(json_data){
-			list_albums(json_data);
+			call_back(json_data);
    		}
 	})
 }
@@ -82,10 +88,15 @@ function get_album() {
 			alert("get album fail");
    		},
   		success: function(json_data){
-			alert("get album success");
+			//alert("get album success");
 			//show_newalbum(json_data);
+			show_image_list(json_data);
    		}
 	});
+}
+
+function get_image() {
+	alert("get_image");
 }
 /*
 function init_lng() {
@@ -119,6 +130,7 @@ function init_theme() {
 function setup_str() {
 }
 */
+/*
 function change_theme() {
 	var theme_name = $.cookie("theme")?$.cookie("theme"):theme_list[0];
 	$.cookie("theme", theme_name);
@@ -128,7 +140,7 @@ function change_theme() {
 	
 	$("head").append('<script type="text/javascript" src="themes/' + theme_name + '/theme_main.js"></script>').ready(function(){setTimeout(setup_page, 1);})
 }
-
+*/
 function change_language(key, lng_name) {
 	if ($.cookie(key) != lng_name)
 	{
@@ -136,7 +148,7 @@ function change_language(key, lng_name) {
 		window.location.reload();
 	}
 }
-
+/*
 function init_lng(theme_name) {
 	var lng = ($.cookie("lng")?$.cookie("lng"):(navigator.language?navigator.language:navigator.browserLanguage)).toLowerCase();
 
@@ -148,3 +160,4 @@ function init_lng(theme_name) {
 
 	return change_language(theme_name, lng_list[0]);
 }
+*/

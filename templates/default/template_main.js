@@ -67,6 +67,10 @@ function init_theme(response) {
 	+ 	'<a href="javascript:add_album(\'' + layout_text["new_album"] + '\')">Add New Album</a>'
 	+ 	'<a href="#">System Config</a>'	
 	+'</div>'
+	+'<div class="dropdown_list disable" id="image_admin_menu">'
+	+ 	'<a href="javascript:show_uploadform()" id="add_image">Add New Image</a>'
+	+ 	'<a href="#">System Config</a>'	
+	+'</div>'
 	+'<div class="main_block" id="album_list"></div>'
 	+'<div class="main_block disable" id="image_list"></div>'
 	+'<div class="main_block disable" id="image_show"></div>'
@@ -74,7 +78,7 @@ function init_theme(response) {
 	+'<div class="bottom_bar"><span>Powered by Dessert Album.</span></div>');
 	//setup_str();
 	
-	get_albumlist();
+	get_albumlist(list_albums);
 	
 	$(function(){
   		$(window).hashchange( function(){
@@ -87,10 +91,10 @@ function init_theme(response) {
 	});
 }
 
-function list_albums(json_data) {	
+function list_albums(json_data) {
+	$(".main_block").removeClass("disable");
 	$("#image_list").addClass("disable");
 	$("#image_show").addClass("disable");
-	$("#album_list").removeClass("disable");
 	
 	loading_icon = "./templates/default/images/loading.gif";
 	albums_list = "";
@@ -108,4 +112,22 @@ function list_albums(json_data) {
 
 function show_newalbum(json_data) {
 	$("#album_list").prepend('<div><a href="javascript:get_album(\'' + json_data.id + '\')" ><img src="./templates/default/images/' + layout_text["no_cover"] + '"/></a><span>' + json_data.name + '</span><span>0</span></div>');
+}
+
+function show_image_list(json_data) {
+	$(".main_block").removeClass("disable");
+	$("#album_list").addClass("disable");
+	$("#image_show").addClass("disable");
+	
+	loading_icon = "./templates/default/images/loading.gif";
+	image_list = "";
+	
+	$.each(json_data.image_list, function(i, n) {
+		//thumbnail = n.cover_thumbnail;
+		//if (n.cover_thumbnail == "no_cover") thumbnail = "./templates/default/images/" + layout_text["no_cover"];
+		//if (n.cover_thumbnail == "password_protect") thumbnail = "./templates/default/images/" + layout_text["password_protect"];
+		image_list += '<div><a href="javascript:get_image(\'' + n.image_id + '\')" ><img src="./thumbnail/' + n.thumbnail_id + '"/></a></div>';
+	});
+	
+	$("#manager_button").attr("href","javascript:open_menu('image_admin_menu', 'manager_button')");
 }

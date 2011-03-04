@@ -129,9 +129,9 @@ span, a {
 }
 
 #album_list div:hover{
-	-moz-box-shadow:1px 4px 2px 3px #333333,1px 4px 7px 7px green;
-	-webkit-box-shadow:1px 4px 2px 3px #333333,1px 4px 7px 7px green;
-	box-shadow:1px 4px 2px 3px #333333,1px 4px 7px 7px green;
+	-moz-box-shadow:1px 4px 2px 3px #333333,1px 4px 7px 7px #999999;
+	-webkit-box-shadow:1px 4px 2px 3px #333333,1px 4px 7px 7px #999999;
+	box-shadow:1px 4px 2px 3px #333333,1px 4px 7px 7px #999999;
 }
 
 #album_list div a {
