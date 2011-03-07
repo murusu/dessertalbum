@@ -78,13 +78,55 @@ function init_theme(response) {
 	+'<div class="bottom_bar"><span>Powered by Dessert Album.</span></div>');
 	//setup_str();
 	
-	get_albumlist(list_albums);
+	//get_albumlist(list_albums);
 	
 	$(function(){
   		$(window).hashchange( function(){
-    		var hash = location.hash;
-    		//document.title = 'The hash is ' + ( hash.replace( /^#/, '' ) || 'blank' ) + '.';
-    		//document.title = hash;
+    		var hash 	= location.hash;    		
+    		position 	= hash.substring(1,2);
+    		id			= hash.substring(2);
+    		
+    		switch(position)
+    		{
+    			case "a":
+    				if(!$("#image_list").html()) 
+    				{
+    					alert("a");
+    				}
+    				else
+    				{
+    					$(".main_block").removeClass("disable");
+		            	$("#album_list").addClass("disable");
+	                	$("#image_show").addClass("disable");
+    				}
+    				break;
+    				
+    			case "i":
+    				if(!$("#image_show").html()) 
+    				{
+    					alert("i");
+    				}
+    				else
+    				{
+    					$(".main_block").removeClass("disable");
+		            	$("#album_list").addClass("disable");
+	                	$("#image_list").addClass("disable");
+    				}
+    				break;
+    				
+    			default:
+    				if(!$("#album_list").html()) 
+    				{
+    					get_albumlist(list_albums);
+    				}
+    				else
+    				{
+    					$(".main_block").removeClass("disable");
+		            	$("#image_list").addClass("disable");
+	                	$("#image_show").addClass("disable");
+    				}
+    				break;
+    		}
   		})
   		
   		$(window).hashchange();  
@@ -103,7 +145,7 @@ function list_albums(json_data) {
 		thumbnail = n.cover_thumbnail;
 		if (n.cover_thumbnail == "no_cover") thumbnail = "./templates/default/images/" + layout_text["no_cover"];
 		if (n.cover_thumbnail == "password_protect") thumbnail = "./templates/default/images/" + layout_text["password_protect"];
-		albums_list += '<div><a href="javascript:get_album(\'' + n.id + '\')" ><img src="' + thumbnail + '"/></a><span>' + n.name + '</span><span><div></div></span></div>';
+		albums_list += '<div><a href="#a' + n.id + '" ><img src="' + thumbnail + '"/></a><span>' + n.name + '</span><span><div></div></span></div>';
 	});
 	
 	//albums_list = '<ul class="albums_list">' + albums_list + '<li style="clear:both;height:1px;"></li></ul>';
@@ -130,4 +172,5 @@ function show_image_list(json_data) {
 	});
 	
 	$("#manager_button").attr("href","javascript:open_menu('image_admin_menu', 'manager_button')");
+	$(".top_bar_left span").html('<a href="#">' + layout_text["top_page"] + '</a> 》 ' + json_data.album_name);
 }
