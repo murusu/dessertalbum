@@ -6,7 +6,8 @@ $(document).ready(function(){
    		data: "action=init",
    		dataType: "json",
    		error: function(req, status, error) {
-   			init_fail();
+   			//init_fail();
+   			error_handler(req, status, error);
    		},
   		success: function(json_data){
      		init_theme(json_data);   		
@@ -38,7 +39,8 @@ function get_albumlist() {
 			+ "&limit=" + limit,
 		dataType: "json",
 		error: function(req, status, error) {
-			alert("get album list fail");
+			//alert("get album list fail");
+			error_handler(req, status, error);
    		},
    		success: function(json_data){
 			call_back(json_data);
@@ -56,6 +58,7 @@ function add_album(name) {
    		dataType: "json",
    		error: function(req, status, error) {
 			//alert("add album fail");
+			error_handler(req, status, error);
    		},
   		success: function(json_data){
 			//alert("add album success");
@@ -65,12 +68,13 @@ function add_album(name) {
 }
 
 function get_album() {
-	id 			= arguments[0]?arguments[0]:""; 
-	password 	= arguments[1]?arguments[1]:""; 
-	sort_type 	= arguments[2]?arguments[2]:"create"; 
-	order 		= arguments[3]?arguments[3]:"descend"; 
-	start 		= arguments[4]?arguments[4]:0; 
-	limit 		= arguments[5]?arguments[5]:1000;
+	call_back	= arguments[0];
+	id 			= arguments[1]?arguments[1]:""; 
+	password 	= arguments[2]?arguments[2]:""; 
+	sort_type 	= arguments[3]?arguments[3]:"create"; 
+	order 		= arguments[4]?arguments[4]:"descend"; 
+	start 		= arguments[5]?arguments[5]:0; 
+	limit 		= arguments[6]?arguments[6]:1000;
 	//alert("id:" + id);
 	$.ajax({
    		type: "POST",
@@ -85,12 +89,14 @@ function get_album() {
 			+ "&limit=" + limit,
    		dataType: "json",
    		error: function(req, status, error) {
-			alert("get album fail");
+			//alert("get album fail");
+			error_handler(req, status, error);
    		},
   		success: function(json_data){
 			//alert("get album success");
 			//show_newalbum(json_data);
-			show_image_list(json_data);
+			//show_image_list(json_data);
+			call_back(json_data);
    		}
 	});
 }

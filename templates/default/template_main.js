@@ -1,4 +1,8 @@
 // JavaScript Document
+function error_handler(req, status, error) {
+	alert("req=" + req + "<br/>status=" + status + "<br/>error=" + error);
+}
+
 function open_menu(menu_id, button_id) {
 	var_left = $("#" + button_id).offset().left - 5;
 	$("#" + menu_id).css("margin-left",var_left + "px");
@@ -85,59 +89,63 @@ function init_theme(response) {
     		var hash 	= location.hash;    		
     		position 	= hash.substring(1,2);
     		id			= hash.substring(2);
-    		
-    		switch(position)
-    		{
-    			case "a":
-    				if(!$("#image_list").html()) 
-    				{
-    					alert("a");
-    				}
-    				else
-    				{
-    					$(".main_block").removeClass("disable");
-		            	$("#album_list").addClass("disable");
-	                	$("#image_show").addClass("disable");
-    				}
-    				break;
-    				
-    			case "i":
-    				if(!$("#image_show").html()) 
-    				{
-    					alert("i");
-    				}
-    				else
-    				{
-    					$(".main_block").removeClass("disable");
-		            	$("#album_list").addClass("disable");
-	                	$("#image_list").addClass("disable");
-    				}
-    				break;
-    				
-    			default:
-    				if(!$("#album_list").html()) 
-    				{
-    					get_albumlist(list_albums);
-    				}
-    				else
-    				{
-    					$(".main_block").removeClass("disable");
-		            	$("#image_list").addClass("disable");
-	                	$("#image_show").addClass("disable");
-    				}
-    				break;
-    		}
+    		    		
+    		change_page(position, id);
   		})
   		
   		$(window).hashchange();  
 	});
 }
 
-function list_albums(json_data) {
-	$(".main_block").removeClass("disable");
-	$("#image_list").addClass("disable");
-	$("#image_show").addClass("disable");
+function change_page(page_code, id) {
+	var div_name = "";
 	
+	switch(page_code)
+	{
+		case "a":
+			div_name = "image_list";
+			
+    		if(!$("#image_list").html()) 
+    		{
+    			//alert("a");
+    			get_album(show_image_list, id);
+    		}
+    		else
+    		{
+    			$("#image_show").empty();
+    		}
+    		break;
+    				
+    	case "i":
+    		div_name = "image_show";
+    		
+    		if(!$("#image_show").html()) 
+    		{
+    			alert("i");
+    		}
+    		break;
+    				
+    	default:
+    		div_name = "album_list";
+    		
+    		if(!$("#album_list").html()) 
+    		{
+    			get_albumlist(list_albums);
+    		}
+    		else
+    		{
+    			$("#image_list").empty();
+    			$("#image_show").empty();
+    		}
+    		break;
+	}
+	
+	$(".main_block").removeClass("disable");
+	$(".main_block").addClass("disable");
+	$("#" + div_name).removeClass("disable");
+}
+
+function list_albums(json_data) {	
 	loading_icon = "./templates/default/images/loading.gif";
 	albums_list = "";
 	
@@ -156,13 +164,15 @@ function show_newalbum(json_data) {
 	$("#album_list").prepend('<div><a href="javascript:get_album(\'' + json_data.id + '\')" ><img src="./templates/default/images/' + layout_text["no_cover"] + '"/></a><span>' + json_data.name + '</span><span>0</span></div>');
 }
 
-function show_image_list(json_data) {
-	$(".main_block").removeClass("disable");
-	$("#album_list").addClass("disable");
-	$("#image_show").addClass("disable");
-	
+function show_image_list(json_data) {	
 	loading_icon = "./templates/default/images/loading.gif";
 	image_list = "";
+	
+	if(json_data.error) 
+	{
+		error_handler("test", "test2", json_data.error);
+		return;
+	}
 	
 	$.each(json_data.image_list, function(i, n) {
 		//thumbnail = n.cover_thumbnail;
