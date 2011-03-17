@@ -1,6 +1,25 @@
 // JavaScript Document
 function error_handler(req, status, error) {
-	alert("req=" + req + "<br/>status=" + status + "<br/>error=" + error);
+	alert("req=" + req + "\nstatus=" + status + "\nerror=" + error);
+}
+
+
+function show_image_list(json_data) {	
+	var loading_icon = "./templates/default/images/loading.gif";
+	var image_list = "";
+//alert("test");	
+	if(json_data.error) 
+	{
+		error_handler("test", "test2", json_data.error);
+		return;
+	}
+	
+	$.each(json_data.image_list, function(i, n) {
+		image_list += '<div><a href="javascript:get_image(\'' + n.image_id + '\')" ><img src="./thumbnail/' + n.thumbnail_id + '"/></a></div>';
+	});
+	
+	$("#manager_button").attr("href","javascript:open_menu('image_admin_menu', 'manager_button')");
+	$(".top_bar_left span").html('<a href="#">' + layout_text["top_page"] + '</a> 》 ' + json_data.album_name);
 }
 
 function open_menu(menu_id, button_id) {
@@ -42,6 +61,7 @@ function setup_str() {
 }
 
 function init_fail() {
+	alert("testes");
 	
 }
 
@@ -139,7 +159,7 @@ function change_page(page_code, id) {
     		}
     		break;
 	}
-	
+
 	$(".main_block").removeClass("disable");
 	$(".main_block").addClass("disable");
 	$("#" + div_name).removeClass("disable");
@@ -164,23 +184,3 @@ function show_newalbum(json_data) {
 	$("#album_list").prepend('<div><a href="javascript:get_album(\'' + json_data.id + '\')" ><img src="./templates/default/images/' + layout_text["no_cover"] + '"/></a><span>' + json_data.name + '</span><span>0</span></div>');
 }
 
-function show_image_list(json_data) {	
-	loading_icon = "./templates/default/images/loading.gif";
-	image_list = "";
-	
-	if(json_data.error) 
-	{
-		error_handler("test", "test2", json_data.error);
-		return;
-	}
-	
-	$.each(json_data.image_list, function(i, n) {
-		//thumbnail = n.cover_thumbnail;
-		//if (n.cover_thumbnail == "no_cover") thumbnail = "./templates/default/images/" + layout_text["no_cover"];
-		//if (n.cover_thumbnail == "password_protect") thumbnail = "./templates/default/images/" + layout_text["password_protect"];
-		image_list += '<div><a href="javascript:get_image(\'' + n.image_id + '\')" ><img src="./thumbnail/' + n.thumbnail_id + '"/></a></div>';
-	});
-	
-	$("#manager_button").attr("href","javascript:open_menu('image_admin_menu', 'manager_button')");
-	$(".top_bar_left span").html('<a href="#">' + layout_text["top_page"] + '</a> 》 ' + json_data.album_name);
-}

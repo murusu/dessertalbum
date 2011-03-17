@@ -7,6 +7,7 @@ $(document).ready(function(){
    		dataType: "json",
    		error: function(req, status, error) {
    			//init_fail();
+   			
    			error_handler(req, status, error);
    		},
   		success: function(json_data){
@@ -75,7 +76,7 @@ function get_album() {
 	order 		= arguments[4]?arguments[4]:"descend"; 
 	start 		= arguments[5]?arguments[5]:0; 
 	limit 		= arguments[6]?arguments[6]:1000;
-	//alert("id:" + id);
+
 	$.ajax({
    		type: "POST",
 		cache: false,
@@ -96,7 +97,11 @@ function get_album() {
 			//alert("get album success");
 			//show_newalbum(json_data);
 			//show_image_list(json_data);
-			call_back(json_data);
+			call_back(json_data);	
+			//alert(add_album);		
+			//show_image_list(json_data);		
+			
+			//add_album("7856");
    		}
 	});
 }
